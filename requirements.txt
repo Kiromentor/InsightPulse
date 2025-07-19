@@ -1,5 +1,8 @@
 Flask
+gunicorn
+matplotlib
+numpy
+Pillow
+textblob==0.17.1
 vaderSentiment
 wordcloud
-matplotlib
-gunicorn

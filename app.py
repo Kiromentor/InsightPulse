@@ -1,71 +1,58 @@
 from flask import Flask, render_template, request
 from textblob import TextBlob
-from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 from wordcloud import WordCloud
 import matplotlib.pyplot as plt
-import numpy as np
-from PIL import Image
 import os
+import nltk
+
+# Descarga automática de recursos necesarios (solo si faltan)
+try:
+    nltk.data.find('tokenizers/punkt')
+except LookupError:
+    nltk.download('punkt')
+
+# Intenta descargar los datos de TextBlob
+try:
+    from textblob import download_corpora
+    download_corpora.download_all()
+except Exception as e:
+    print("Warning: no se pudieron descargar los corpus de TextBlob:", e)
 
 app = Flask(__name__)
 
-def generate_wordcloud(keywords):
-    # Convierte la lista en un string separado por espacios
-    text = " ".join(keywords)
-
-    # Ruta a la imagen del mapa
-    mask_path = os.path.join("static", "img", "world_map.png")
-    mask = np.array(Image.open(mask_path))
-
-    # Crea la nube de palabras con la máscara del mapa
-    wordcloud = WordCloud(
-        background_color="white",
-        mask=mask,
-        contour_width=1,
-        contour_color="black",
-        colormap="cool",
-        width=mask.shape[1],
-        height=mask.shape[0]
-    ).generate(text)
-
-    # Guarda la imagen resultante
-    output_path = os.path.join("static", "wordcloud.png")
-    wordcloud.to_file(output_path)
-    return output_path
-
-def analyze_text(text, lang):
-    if lang == "en":
-        # Análisis con VADER para inglés
-        analyzer = SentimentIntensityAnalyzer()
-        scores = analyzer.polarity_scores(text)
-        polarity = scores["compound"]
-        blob = TextBlob(text)
-        keywords = [word.lower() for word in blob.words if word.isalpha() and len(word) > 4]
-    elif lang == "es":
-        # Solo keywords y polaridad simple (no VADER)
-        blob = TextBlob(text)
-        polarity = blob.sentiment.polarity
-        keywords = [word.lower() for word in blob.words if word.isalpha() and len(word) > 4]
-    else:
-        polarity = 0.0
-        keywords = []
-
-    wordcloud_path = generate_wordcloud(keywords)
-
-    return {
-        "polarity": polarity,
-        "keywords": keywords,
-        "wordcloud_path": wordcloud_path
-    }
-
+# Ruta principal
 @app.route("/", methods=["GET", "POST"])
 def index():
     result = None
     selected_lang = "en"
+
     if request.method == "POST":
         text = request.form["text"]
-        selected_lang = request.form["language"]
-        result = analyze_text(text, selected_lang)
+        selected_lang = request.form.get("language", "en")
 
-    return render_template("index.html", result=result, selected_lang=selected_lang)
+        blob = TextBlob(text)
 
+        try:
+            if selected_lang == "es":
+                blob = blob.translate(to="en")
+        except Exception as e:
+            print("No se pudo traducir:", e)
+
+        polarity = blob.sentiment.polarity
+        words = [word.lower() for word in blob.words if word.isalpha() and len(word) > 3]
+
+        # Crear nube de palabras y guardarla
+        wordcloud = WordCloud(width=800, height=400, background_color=None, mode="RGBA").generate(" ".join(words))
+        wordcloud_path = os.path.join("static", "wordcloud.png")
+        wordcloud.to_file(wordcloud_path)
+
+        result = {
+            "polarity": polarity,
+            "keywords": list(set(words)),  # solo palabras únicas
+            "image_path": wordcloud_path
+        }
+
+    return render_template("index.html", result=result, language=selected_lang)
+
+if __name__ == "__main__":
+    app.run(debug=True)

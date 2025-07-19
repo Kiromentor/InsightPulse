@@ -1,2 +1,0 @@
-git remote set-url origin https://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@github.com/Kiromentor/InsightPulse.git
-git push -u origin main

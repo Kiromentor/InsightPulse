@@ -1,7 +1,5 @@
 Flask
-gunicorn
-textblob
-nltk
-matplotlib
-wordcloud
 vaderSentiment
+wordcloud
+matplotlib
+gunicorn

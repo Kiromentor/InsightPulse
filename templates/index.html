@@ -2,76 +2,53 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>InsightPulse - Text Analyzer</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>InsightPulse</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        textarea {
+            width: 100%;
+            height: 150px;
+            margin-bottom: 10px;
+        }
+        button {
+            padding: 10px 20px;
+        }
+        select {
+            margin-bottom: 10px;
+        }
+    </style>
 </head>
-<body class="bg-gray-50 text-gray-800 min-h-screen">
-    <div class="max-w-3xl mx-auto p-6">
-        <h1 class="text-3xl font-bold mb-4 text-center">InsightPulse</h1>
-        <form method="POST" class="bg-white p-6 rounded-lg shadow-md space-y-4">
-            <label for="text" class="block font-semibold">Enter your text:</label>
-            <textarea id="text" name="text" rows="6" class="w-full p-3 border rounded-md" placeholder="Type or paste text here...">{{ text }}</textarea>
-
-            <label for="lang" class="block font-semibold">Select language:</label>
-            <select name="lang" id="lang" class="w-full p-2 border rounded-md">
-                <option value="en" {% if selected_lang == 'en' %}selected{% endif %}>English</option>
-                <option value="es" {% if selected_lang == 'es' %}selected{% endif %}>Español</option>
-            </select>
-
-            <button type="submit" class="w-full bg-blue-600 text-white p-3 rounded-md hover:bg-blue-700 transition">Analyze</button>
-        </form>
-
-        {% if result %}
-        <div class="mt-6 bg-white p-6 rounded-lg shadow-md">
-            <h2 class="text-xl font-semibold mb-2">Analysis Result</h2>
-            <p><strong>Sentiment Polarity:</strong> {{ result.polarity }}</p>
-
-            <h3 class="mt-4 font-semibold">Keywords</h3>
-            <ul class="list-disc pl-6 text-sm">
-                {% for word in result.keywords %}
-                <li>{{ word }}</li>
-                {% endfor %}
-            </ul>
-
-            <canvas id="wordChart" class="mt-6"></canvas>
-        </div>
-        {% endif %}
-    </div>
+<body>
+    <h1>InsightPulse 🌐</h1>
+    <form method="post">
+        <label for="language">Choose language:</label>
+        <select name="language" id="language">
+            <option value="en" {% if selected_lang == 'en' %}selected{% endif %}>English</option>
+            <option value="es" {% if selected_lang == 'es' %}selected{% endif %}>Español</option>
+        </select><br>
+        <textarea name="text" placeholder="Enter your text here..."></textarea><br>
+        <button type="submit">Analyze</button>
+    </form>
 
     {% if result %}
-    <script>
-        const ctx = document.getElementById('wordChart').getContext('2d');
-        const words = {{ result.keywords|tojson }};
-        const data = {
-            labels: words,
-            datasets: [{
-                label: 'Keyword Frequency',
-                data: words.map(w => 1), // All 1's as placeholders
-                backgroundColor: 'rgba(59, 130, 246, 0.6)'
-            }]
-        };
+        <h2>Analysis Result</h2>
+        <p><strong>Sentiment (polarity):</strong> {{ result.polarity }}</p>
 
-        new Chart(ctx, {
-            type: 'bar',
-            data: data,
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: { display: false },
-                    title: {
-                        display: true,
-                        text: 'Word Cloud (by frequency)'
-                    }
-                },
-                scales: {
-                    x: {
-                        ticks: { autoSkip: false, maxRotation: 90, minRotation: 45 }
-                    }
-                }
-            }
-        });
-    </script>
+        <h3>Keywords</h3>
+        <ul>
+            {% for word in result.keywords %}
+                <li>{{ word }}</li>
+            {% endfor %}
+        </ul>
+
+        <h3>Word Cloud Map</h3>
+        <img src="{{ url_for('static', filename='wordcloud.png') }}" alt="Word Cloud" style="max-width:100%;">
     {% endif %}
 </body>
 </html>

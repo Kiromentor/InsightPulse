@@ -2,7 +2,10 @@
 from textblob import TextBlob
 import nltk 
 
-nltk.download('punkt')  # Solo si hace falta (Render puede fallar sin esto)
+try:
+    nltk.data.find('tokenizers/punkt')
+except LookupError:
+    nltk.download('punkt')
 
 
 def analyze_text(text):

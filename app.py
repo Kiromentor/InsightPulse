@@ -1,6 +1,6 @@
 # app.py
 from flask import Flask, render_template, request
-from analysis.analyzer import analyze_text
+from analyzer import analyze_text
 
 app = Flask(__name__)
 

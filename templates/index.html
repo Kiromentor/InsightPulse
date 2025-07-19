@@ -1,66 +1,77 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>InsightPulse</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
-  <style>
-    body {
-      padding: 2rem;
-    }
-    .tag {
-      margin: 4px;
-      font-size: 1rem;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <title>InsightPulse - Text Analyzer</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-  <section class="section">
-    <div class="container">
-      <h1 class="title">InsightPulse</h1>
-      <form method="POST">
-        <div class="field">
-          <label class="label">Text to analyze:</label>
-          <div class="control">
-            <textarea class="textarea" name="text" placeholder="Paste or write your text here..." required>{{ text }}</textarea>
-          </div>
-        </div>
-        <div class="field">
-          <label class="label">Language:</label>
-          <div class="control">
-            <div class="select">
-              <select name="language">
-                <option value="en" {% if language == "en" %}selected{% endif %}>English</option>
-                <option value="es" {% if language == "es" %}selected{% endif %}>Spanish</option>
-              </select>
-            </div>
-          </div>
-        </div>
-        <div class="field">
-          <div class="control">
-            <button class="button is-link">Analyze</button>
-          </div>
-        </div>
-      </form>
+<body class="bg-gray-50 text-gray-800 min-h-screen">
+    <div class="max-w-3xl mx-auto p-6">
+        <h1 class="text-3xl font-bold mb-4 text-center">InsightPulse</h1>
+        <form method="POST" class="bg-white p-6 rounded-lg shadow-md space-y-4">
+            <label for="text" class="block font-semibold">Enter your text:</label>
+            <textarea id="text" name="text" rows="6" class="w-full p-3 border rounded-md" placeholder="Type or paste text here...">{{ text }}</textarea>
 
-      {% if result %}
-        {% if result.error %}
-          <div class="notification is-danger mt-4">{{ result.error }}</div>
-        {% else %}
-          <div class="box mt-5">
-            <h2 class="subtitle">Sentiment Polarity:</h2>
-            <p><strong>{{ result.polarity }}</strong></p>
+            <label for="lang" class="block font-semibold">Select language:</label>
+            <select name="lang" id="lang" class="w-full p-2 border rounded-md">
+                <option value="en" {% if selected_lang == 'en' %}selected{% endif %}>English</option>
+                <option value="es" {% if selected_lang == 'es' %}selected{% endif %}>Español</option>
+            </select>
 
-            <h2 class="subtitle mt-4">Keywords:</h2>
-            <div class="tags">
-              {% for keyword in result.keywords %}
-                <span class="tag is-info">{{ keyword }}</span>
-              {% endfor %}
-            </div>
-          </div>
+            <button type="submit" class="w-full bg-blue-600 text-white p-3 rounded-md hover:bg-blue-700 transition">Analyze</button>
+        </form>
+
+        {% if result %}
+        <div class="mt-6 bg-white p-6 rounded-lg shadow-md">
+            <h2 class="text-xl font-semibold mb-2">Analysis Result</h2>
+            <p><strong>Sentiment Polarity:</strong> {{ result.polarity }}</p>
+
+            <h3 class="mt-4 font-semibold">Keywords</h3>
+            <ul class="list-disc pl-6 text-sm">
+                {% for word in result.keywords %}
+                <li>{{ word }}</li>
+                {% endfor %}
+            </ul>
+
+            <canvas id="wordChart" class="mt-6"></canvas>
+        </div>
         {% endif %}
-      {% endif %}
     </div>
-  </section>
+
+    {% if result %}
+    <script>
+        const ctx = document.getElementById('wordChart').getContext('2d');
+        const words = {{ result.keywords|tojson }};
+        const data = {
+            labels: words,
+            datasets: [{
+                label: 'Keyword Frequency',
+                data: words.map(w => 1), // All 1's as placeholders
+                backgroundColor: 'rgba(59, 130, 246, 0.6)'
+            }]
+        };
+
+        new Chart(ctx, {
+            type: 'bar',
+            data: data,
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false },
+                    title: {
+                        display: true,
+                        text: 'Word Cloud (by frequency)'
+                    }
+                },
+                scales: {
+                    x: {
+                        ticks: { autoSkip: false, maxRotation: 90, minRotation: 45 }
+                    }
+                }
+            }
+        });
+    </script>
+    {% endif %}
 </body>
 </html>

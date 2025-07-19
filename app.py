@@ -1,5 +1,6 @@
+# app.py
 from flask import Flask, render_template, request
-from analyzer import analyze_text
+from analysis.analyzer import analyze_text
 
 app = Flask(__name__)
 
@@ -7,12 +8,17 @@ app = Flask(__name__)
 def index():
     result = None
     text = ""
-    language = "en"
+    selected_lang = "en"  # Valor por defecto
     if request.method == "POST":
-        text = request.form["text"]
-        language = request.form["language"]
-        result = analyze_text(text, language)
-    return render_template("index.html", result=result, text=text, language=language)
+        text = request.form.get("text", "").strip()
+        selected_lang = request.form.get("lang", "en")
+
+        if not text:
+            return "Missing text input", 400
+
+        result = analyze_text(text, lang=selected_lang)
+
+    return render_template("index.html", result=result, text=text, selected_lang=selected_lang)
 
 # Solo para local, pero innecesario para Render
 # if __name__ == "__main__":

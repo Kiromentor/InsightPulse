@@ -11,5 +11,6 @@ def index():
         result = analyze_text(text)
     return render_template("index.html", result=result)
 
-if __name__ == "__main__":
-    app.run(debug=True)
+# Solo para local, pero innecesario para Render
+# if __name__ == "__main__":
+#     app.run(debug=True)

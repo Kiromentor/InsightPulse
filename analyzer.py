@@ -1,18 +1,15 @@
-# analysis/analyzer.py
 from textblob import TextBlob
-import nltk 
-
-try:
-    nltk.data.find('tokenizers/punkt')
-except LookupError:
-    nltk.download('punkt')
-
 
 def analyze_text(text):
     blob = TextBlob(text)
     sentiment = blob.sentiment.polarity
 
+    # Usamos palabras filtradas como alternativa simple a noun_phrases
+    keywords = list(set(
+        word.lower() for word in blob.words if word.isalpha() and len(word) > 4
+    ))[:10]  # Limitamos a 10 palabras
+
     return {
         "polarity": sentiment,
-        "keywords": [word.lower() for word in blob.noun_phrases]
+        "keywords": keywords
     }

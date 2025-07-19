@@ -10,6 +10,7 @@ Análisis de sentimiento y extracción de palabras clave con Flask + TextBlob + 
 
 * Detectar el **sentimiento** (polaridad: positivo, negativo o neutro)
 * Extraer **palabras clave** significativas (sustantivos o frases clave)
+* Visualizar un **mapa de palabras** (word cloud) con tamaños según relevancia
 
 Está construida con Python, Flask y utiliza bibliotecas de procesamiento de lenguaje natural (NLP) como **TextBlob** y **NLTK**.
 
@@ -19,75 +20,67 @@ Está construida con Python, Flask y utiliza bibliotecas de procesamiento de len
 
 Este proyecto es ideal para:
 
-* Entrenarse con procesamiento de texto en Python
+* Practicar procesamiento de texto en Python
 * Entender conceptos básicos de NLP
-* Crear una app web con análisis en tiempo real
-* Mostrar en tu portafolio como ejemplo práctico
+* Crear una app web interactiva
+* Mostrarlo como proyecto de portafolio personal
 
 ---
 
 ## 🧰 Tecnologías utilizadas
 
-* Python 3.13+
+* Python 3.10+
 * Flask
 * TextBlob
 * NLTK
+* WordCloud
+* Matplotlib
 * HTML + TailwindCSS (CDN)
-* Render (para deploy gratuito)
+* Replit (para ejecutar gratis en la nube)
 
 ---
 
 ## 📷 Captura de pantalla
 
-*Agregá una captura o GIF del proyecto funcionando aquí*
+> Agregá una captura o GIF del proyecto funcionando aquí  
+> Ejemplo: `static/wordcloud.png` o una imagen del resultado del análisis
 
 ---
 
-## ⚙️ Cómo ejecutar el proyecto
+## ⚙️ Cómo ejecutar el proyecto en Replit
 
-### 1. Clonar el repositorio
+1. **Importar repositorio o subir archivos en Replit**
 
-```bash
-git clone https://github.com/Kiromentor/InsightPulse
-cd insightpulse
-```
-
-### 2. Crear entorno virtual e instalar dependencias
+2. **Instalar dependencias** (en el shell o en el archivo `replit.nix`):
 
 ```bash
-python -m venv venv
-source venv/bin/activate   # En Windows: venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-### 3. Descargar datos de NLTK y TextBlob
+3. **Descargar los datos de NLTK (una sola vez)**
 
 ```python
-# En Python interactivo
+# Desde el shell interactivo de Python
 import nltk
 nltk.download('punkt')
 nltk.download('brown')
-
-# O usar:
-python -m textblob.download_corpora
 ```
 
-### 4. Ejecutar la app
+4. **Ejecutar la app**
 
 ```bash
-flask run
+python app.py
 ```
+
+Y accedé a la URL generada por Replit.
 
 ---
 
-## 🌐 Deploy en Render
+## 🌍 Cómo funciona
 
-Render requiere:
-
-* `requirements.txt`
-* `app.py`
-* archivo `render.yaml` (opcional)
-* uso de `gunicorn` como comando de arranque (`gunicorn app:app`)
+El usuario escribe un texto en inglés o español, selecciona el idioma y presiona "Analyze".  
+La app detecta el sentimiento usando **TextBlob** y extrae palabras clave.  
+Luego genera una **nube de palabras estática** donde las palabras más importantes se ven más grandes.
 
 ---
 
@@ -99,5 +92,6 @@ Render requiere:
 
 ## 🧠 Autor
 
-Creado por Javier J. Alvarez (https://github.com/Kiromentor/InsightPulse) — 2025
-Proyecto académico y de aprendizaje.
+Creado por Javier J. Alvarez  
+🔗 https://github.com/Kiromentor/InsightPulse  
+📅 Año: 2025 — Proyecto académico y de aprendizaje

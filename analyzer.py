@@ -1,16 +1,23 @@
-from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
-import re
-
-analyzer = SentimentIntensityAnalyzer()
+# analysis/analyzer.py
+from textblob import TextBlob
+from wordcloud import WordCloud
+import matplotlib.pyplot as plt
+import os
 
 def analyze_text(text):
-    sentiment = analyzer.polarity_scores(text)["compound"]
+    blob = TextBlob(text)
+    sentiment = blob.sentiment.polarity
 
-    # Extrae palabras alfabéticas largas como keywords simples
-    words = re.findall(r'\b[a-zA-Z]{5,}\b', text.lower())
-    keywords = list(set(words))[:10]  # máximo 10 keywords únicas
+    # keywords básicas
+    keywords = [word.lower() for word in blob.words if word.isalpha() and len(word) > 4]
+
+    # generar nube de palabras
+    wordcloud = WordCloud(width=800, height=400, background_color="white").generate(" ".join(keywords))
+    image_path = os.path.join("static", "wordcloud.png")
+    wordcloud.to_file(image_path)
 
     return {
         "polarity": sentiment,
-        "keywords": keywords
+        "keywords": keywords,
+        "wordcloud_image": image_path
     }

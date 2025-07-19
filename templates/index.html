@@ -1,40 +1,72 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>InsightPulse</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <meta charset="UTF-8">
+    <title>InsightPulse - Análisis de Texto</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 2rem;
+            background-color: #f4f4f4;
+            max-width: 800px;
+            margin: auto;
+        }
+        textarea {
+            width: 100%;
+            padding: 1rem;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+        }
+        input[type="submit"] {
+            padding: 0.5rem 1.5rem;
+            font-size: 1rem;
+            background-color: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        h2, h3 {
+            margin-top: 2rem;
+        }
+        ul {
+            list-style: disc;
+            margin-left: 2rem;
+        }
+        img {
+            margin-top: 1rem;
+            max-width: 100%;
+            border: 1px solid #ccc;
+            box-shadow: 0 0 5px rgba(0,0,0,0.1);
+        }
+    </style>
 </head>
-<body class="bg-gray-100 font-sans leading-normal tracking-normal">
+<body>
+    <h1>InsightPulse</h1>
+    <p>Ingresá un texto para analizar su sentimiento y palabras clave.</p>
 
-  <div class="container mx-auto p-8">
-    <div class="text-center mb-10">
-      <h1 class="text-4xl font-bold text-indigo-700">InsightPulse</h1>
-      <p class="text-gray-600">Análisis de sentimiento y palabras clave</p>
-    </div>
-
-    <form method="POST" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 max-w-3xl mx-auto">
-      <label for="text" class="block text-gray-700 font-bold mb-2">Ingresá tu texto:</label>
-      <textarea name="text" id="text" rows="6" required
-        class="w-full p-3 border border-gray-300 rounded mb-4 resize-none focus:outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
-      <button type="submit"
-        class="bg-indigo-600 text-white font-bold py-2 px-4 rounded hover:bg-indigo-700 transition">Analizar</button>
+    <form method="post">
+        <textarea name="text" rows="6" placeholder="Escribí tu texto aquí..."></textarea><br>
+        <input type="submit" value="Analizar">
     </form>
 
     {% if result %}
-    <div class="bg-white shadow-md rounded px-8 py-6 max-w-3xl mx-auto">
-      <h2 class="text-2xl font-bold text-indigo-600 mb-4">Resultado del análisis</h2>
-      <p class="mb-2"><strong>Sentimiento (polaridad):</strong> {{ result.polarity }}</p>
-      <p class="mb-2"><strong>Palabras clave:</strong></p>
-      <ul class="list-disc list-inside text-gray-700">
-        {% for keyword in result.keywords %}
-          <li>{{ keyword }}</li>
-        {% endfor %}
-      </ul>
-    </div>
-    {% endif %}
-  </div>
+        <h2>Resultado del análisis</h2>
+        <p><strong>Sentimiento (polaridad):</strong> {{ result.polarity }}</p>
 
+        <h3>Palabras clave:</h3>
+        {% if result.keywords %}
+            <ul>
+                {% for word in result.keywords %}
+                    <li>{{ word }}</li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No se detectaron palabras clave.</p>
+        {% endif %}
+
+        <h3>Nube de palabras:</h3>
+        <img src="{{ url_for('static', filename='wordcloud.png') }}" alt="Nube de palabras generada">
+    {% endif %}
 </body>
 </html>

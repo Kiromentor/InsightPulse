@@ -1,93 +1,34 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>InsightPulse</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f4f4f4;
-            padding: 20px;
-            text-align: center;
-        }
-
-        form {
-            margin-bottom: 30px;
-        }
-
-        textarea {
-            width: 90%;
-            max-width: 600px;
-            height: 120px;
-            margin-bottom: 10px;
-        }
-
-        select, button {
-            padding: 10px;
-            margin: 5px;
-            font-size: 16px;
-        }
-
-        .result {
-            margin-top: 20px;
-        }
-
-        .map-container {
-            position: relative;
-            display: inline-block;
-        }
-
-        .map-container img {
-            width: 100%;
-            max-width: 900px;
-        }
-
-        .map-container .wordcloud {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            max-width: 900px;
-            opacity: 0.95;
-            pointer-events: none;
-        }
-    </style>
+    <title>Text Analyzer</title>
 </head>
 <body>
-
-    <h1>InsightPulse</h1>
-    <p>Analyze the sentiment and keywords of a text in English or Spanish.</p>
-
-    <form method="post">
-        <textarea name="text" placeholder="Enter your text here..." required></textarea><br>
-
-        <label for="language">Language:</label>
-        <select name="language" id="language">
-            <option value="en" {% if language == "en" %}selected{% endif %}>English</option>
-            <option value="es" {% if language == "es" %}selected{% endif %}>Español</option>
-        </select>
-
+    <h1>Text Analyzer</h1>
+    <form method="POST">
+        <textarea name="text" rows="6" cols="60" placeholder="Enter your text here..."></textarea><br>
+        <label for="lang">Language:</label>
+        <select name="lang">
+            <option value="en">English</option>
+            <option value="es">Español</option>
+        </select><br><br>
         <button type="submit">Analyze</button>
     </form>
 
     {% if result %}
-        <div class="result">
-            <h2>Analysis Result</h2>
-            <p><strong>Sentiment Polarity:</strong> {{ result.polarity }}</p>
-
-            <div class="map-container">
-                <img src="{{ url_for('static', filename='world_map.png') }}" alt="World Map">
-                <img src="{{ url_for('static', filename='wordcloud.png') }}" class="wordcloud" alt="Word Cloud">
-            </div>
-
+        {% if result.error %}
+            <p style="color:red;">{{ result.error }}</p>
+        {% else %}
+            <h3>Sentiment (Polarity): {{ result.polarity }}</h3>
             <h3>Keywords:</h3>
             <ul>
-                {% for keyword in result.keywords %}
-                    <li>{{ keyword }}</li>
+                {% for word in result.keywords %}
+                    <li>{{ word }}</li>
                 {% endfor %}
             </ul>
-        </div>
+            <h3>Word Map:</h3>
+            <img src="{{ url_for('static', filename='wordcloud.png') }}" alt="Word Map">
+        {% endif %}
     {% endif %}
-
 </body>
 </html>

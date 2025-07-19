@@ -1,6 +1,8 @@
 # analysis/analyzer.py
 from textblob import TextBlob
-import nltk nltk.download('punkt')  # Solo si hace falta (Render puede fallar sin esto)
+import nltk 
+
+nltk.download('punkt')  # Solo si hace falta (Render puede fallar sin esto)
 
 
 def analyze_text(text):

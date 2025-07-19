@@ -1,23 +1,27 @@
-# analysis/analyzer.py
 from textblob import TextBlob
-from wordcloud import WordCloud
-import matplotlib.pyplot as plt
-import os
 
-def analyze_text(text):
+def analyze_text(text, lang="en"):
     blob = TextBlob(text)
-    sentiment = blob.sentiment.polarity
 
-    # keywords básicas
-    keywords = [word.lower() for word in blob.words if word.isalpha() and len(word) > 4]
+    # Si el idioma es español, traducir al inglés
+    if lang == "es":
+        try:
+            blob = blob.translate(to="en")
+        except Exception as e:
+            return {
+                "error": f"Error al traducir el texto: {str(e)}",
+                "polarity": None,
+                "keywords": []
+            }
 
-    # generar nube de palabras
-    wordcloud = WordCloud(width=800, height=400, background_color="white").generate(" ".join(keywords))
-    image_path = os.path.join("static", "wordcloud.png")
-    wordcloud.to_file(image_path)
+    polarity = blob.sentiment.polarity
+    keywords = [
+        word.lower()
+        for word in blob.words
+        if word.isalpha() and len(word) > 4
+    ]
 
     return {
-        "polarity": sentiment,
-        "keywords": keywords,
-        "wordcloud_image": image_path
+        "polarity": polarity,
+        "keywords": keywords
     }

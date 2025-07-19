@@ -1,0 +1,19 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html>
+<head>
+  <title>InsightPulse</title>
+</head>
+<body>
+  <h1>InsightPulse – Análisis emocional</h1>
+  <form method="post">
+    <textarea name="text" rows="8" cols="50"></textarea><br>
+    <button type="submit">Analizar</button>
+  </form>
+  {% if result %}
+    <h2>Resultado:</h2>
+    <p>Polaridad: {{ result.polarity }}</p>
+    <p>Palabras clave: {{ result.keywords }}</p>
+  {% endif %}
+</body>
+</html>

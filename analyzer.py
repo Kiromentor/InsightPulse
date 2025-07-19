@@ -1,13 +1,14 @@
-from textblob import TextBlob
+from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+import re
+
+analyzer = SentimentIntensityAnalyzer()
 
 def analyze_text(text):
-    blob = TextBlob(text)
-    sentiment = blob.sentiment.polarity
+    sentiment = analyzer.polarity_scores(text)["compound"]
 
-    # Usamos palabras filtradas como alternativa simple a noun_phrases
-    keywords = list(set(
-        word.lower() for word in blob.words if word.isalpha() and len(word) > 4
-    ))[:10]  # Limitamos a 10 palabras
+    # Extrae palabras alfabéticas largas como keywords simples
+    words = re.findall(r'\b[a-zA-Z]{5,}\b', text.lower())
+    keywords = list(set(words))[:10]  # máximo 10 keywords únicas
 
     return {
         "polarity": sentiment,
